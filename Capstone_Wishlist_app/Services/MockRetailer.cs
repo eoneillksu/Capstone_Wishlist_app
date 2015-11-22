@@ -24,5 +24,9 @@ namespace Capstone_Wishlist_app.Services {
         public Task<Item[]> LookupItemsAsync(string[] itemIds) {
             throw new NotImplementedException();
         }
+
+        public Task<Item> LookupItemFromUrlAsync(string url) {
+            throw new NotImplementedException();
+        }
     }
 }

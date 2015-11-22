@@ -47,7 +47,28 @@
     </div>
     <div class="form-group">
         <div class="col-md-2 col-md-offset-2">
-            <button class="btn btn-default" type="button" onclick="getSearchResults()">Search</button>
+            <button class="btn btn-default" type="button" onclick="searchItemsByKeywords()">
+                <i class="fa fa-search"></i>
+                Find items by keyword
+            </button>
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <label class="control-label col-md-2">Retailer Link</label>
+        <div class="col-md-6">
+            @Html.TextBox("url", "", new { 
+                @class = "form-control",
+                placeholder = "Paste the address of the retailer's listing here",
+                style = "max-width: 100%"})
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-2 col-md-offset-2">
+            <button class="btn btn-default" type="button" onclick="getItemFromUrl()">
+                <i class="fa fa-link"></i>
+                Get the item from link
+            </button>
         </div>
     </div>
 </div>
@@ -58,7 +79,7 @@
 <script type="text/javascript">
     var wishlistId = @Model.WishlistId
 
-    function getSearchResults() {
+    function searchItemsByKeyword() {
         var $searchForm = $("#searchForm");
         var category = $("select[name=category]", $searchForm).val();
         var keywords = $("input[name=keywords]", $searchForm).val();
@@ -67,6 +88,16 @@
             category: category,
             keywords: keywords
         }, function (results) {
+            $("#searchResults").html(results);
+        }, "html");
+    }
+
+    function getItemFromUrl() {
+        var getUrl = "@Url.Action("GetItemFromUrl", new { id = @Model.WishlistId })";
+        var $searchForm = $("#searchForm");
+        var itemUrl = $("input[name=url]", $searchForm).val();
+
+        $.get(getUrl, { itemUrl: itemUrl }, function (results) {
             $("#searchResults").html(results);
         }, "html");
     }

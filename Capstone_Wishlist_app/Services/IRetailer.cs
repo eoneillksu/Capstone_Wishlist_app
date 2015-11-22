@@ -8,6 +8,7 @@ namespace Capstone_Wishlist_app.Services {
     interface IRetailer {
         Task<Item[]> FindItemsAsync(ItemCategory category, string keywords);
         Task<Item[]> LookupItemsAsync(string[] itemIds);
+        Task<Item> LookupItemFromUrlAsync(string url);
     }
 
     public class Item {

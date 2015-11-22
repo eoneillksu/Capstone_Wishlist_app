@@ -5,6 +5,7 @@ using System.Web;
 using System.Threading.Tasks;
 using Capstone_Wishlist_app.Services.Amazon;
 using AmazonItem = Capstone_Wishlist_app.Services.Amazon.Item;
+using System.Text.RegularExpressions;
 
 namespace Capstone_Wishlist_app.Services {
     public class AmazonRetailer : IRetailer {
@@ -84,6 +85,31 @@ namespace Capstone_Wishlist_app.Services {
 
         private static int ToAgeMonths(DecimalWithUnits age) {
             return age == null ? 0 : (int) age.Value;
+        }
+
+
+        public async Task<Item> LookupItemFromUrlAsync(string url) {
+            var itemId = GetItemIdFromUrl(url);
+
+            if (itemId == null) {
+                return null;
+            }
+
+            var items = await LookupItemsAsync(new[] { itemId });
+
+            return items.FirstOrDefault();
+        }
+
+        public string GetItemIdFromUrl(string url) {
+            const string asinPattern = @"/dp/([a-zA-Z0-9]{1,20})";
+            var regex = new Regex(asinPattern, RegexOptions.IgnoreCase);
+            var match = regex.Match(url);
+
+            if (!match.Success) {
+                return null;
+            }
+
+            return match.Groups[1].Value;
         }
     }
 }

@@ -65,6 +65,29 @@ namespace Capstone_Wishlist_app.Controllers {
             return PartialView("_SearchResults", viewModel);
         }
 
+        [HttpGet]
+        [FamilyAuthorize(Entity="Wishlist")]
+        public async Task<ActionResult> GetItemFromUrl(int id, string itemUrl) {
+            var item = await _retailer.LookupItemFromUrlAsync(itemUrl);
+
+            if (item == null) {
+                return PartialView("_SearchResults", new FindGiftsResultsViewModel {
+                    Results = new List<Item>()
+                });
+            }
+
+            var existingItemIds = await (
+                from wi in _db.WishlistItems
+                where wi.WishlistId == id
+                select wi.ItemId).ToListAsync();
+
+            return PartialView("_SearchResults", new FindGiftsResultsViewModel {
+                WishlistId = id,
+                ExistingItemIds = existingItemIds,
+                Results = new List<Item> { item }
+            });
+        }
+
         [HttpPost]
         [FamilyAuthorize(Entity="Wishlist")]
         public async Task<ActionResult> AddItem(int id, string itemId) {

@@ -4,11 +4,15 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Configuration;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Capstone_Wishlist_app.Models;
 using Capstone_Wishlist_app.DAL;
 using Capstone_Wishlist_app.Services;
+using RetailCategory = Capstone_Wishlist_app.Services.ItemCategory;
+using ItemCategory = Capstone_Wishlist_app.Models.ItemSearchCategory;
 
 namespace Capstone_Wishlist_app.Controllers {
     public class WishlistController : Controller {
@@ -66,7 +70,6 @@ namespace Capstone_Wishlist_app.Controllers {
 
         [HttpGet]
         [FamilyAuthorize(Entity="Wishlist")]
-
         public ActionResult FindGifts(int id) {
             var wishlist = _db.WishLists.Find(id);
 
@@ -78,12 +81,13 @@ namespace Capstone_Wishlist_app.Controllers {
 
         [HttpGet]
         [FamilyAuthorize(Entity="Wishlist")]
-        public async Task<ActionResult> SearchItems(int id, ItemCategory category, string keywords) {
+        public async Task<ActionResult> SearchItems(int id, RetailCategory category, string keywords) {
+            var items = await _retailer.FindItemsAsync(category, keywords);
+            await UpdateFoundItems(items, category, keywords);
             var existingItemIds = await (
                 from wi in _db.WishlistItems
                 where wi.WishlistId == id
                 select wi.ItemId).ToListAsync();
-            var items = await _retailer.FindItemsAsync(category, keywords);
             var viewModel = new FindGiftsResultsViewModel {
                 WishlistId = id,
                 Results = items.ToList(),
@@ -91,6 +95,91 @@ namespace Capstone_Wishlist_app.Controllers {
             };
 
             return PartialView("_SearchResults", viewModel);
+        }
+
+        private async Task UpdateFoundItems(IList<Item> items, RetailCategory category, string keywords) {
+            var itemIds = items.Select(i => i.Id)
+                .ToList();
+
+            using (var db = new WishlistContext()) {
+                var foundItems = await db.FoundItems.Where(fi => itemIds.Contains(fi.ItemId))
+                    .ToListAsync();
+                var newItems = BuildNewFoundItems(foundItems, items);
+
+                foreach(var ni in newItems) {
+                    db.FoundItems.Add(ni);
+                }
+
+                await db.SaveChangesAsync();                
+                
+                foundItems.AddRange(newItems);
+                var foundItemIds = foundItems.Select(fi => fi.ItemId)
+                    .ToList();
+                var keywordList = SplitKeywords(keywords);
+                await UpdateItemKeywwords(db, foundItemIds, keywordList);
+                await UpdateItemCategories(db, foundItemIds, category);
+            }
+        }
+
+        private IList<string> SplitKeywords(string keywords) {
+            return Regex.Split(keywords, @"\s+")
+                .Where(kw => !string.IsNullOrEmpty(kw))
+                .ToList();
+        }
+
+        private IList<FoundItem> BuildNewFoundItems(
+            IList<FoundItem> foundItems,
+            IList<Item> items
+        ) {
+            var foundItemIds = foundItems.Select(fi => fi.ItemId);
+            return items.Where(i => !foundItemIds.Contains(i.Id))
+                .Select(i => new FoundItem {
+                    ItemId = i.Id,
+                    ListPrice = i.ListPrice,
+                    MinAgeMonths = i.MinAgeMonths,
+                    MaxAgeMonths = i.MaxAgeMonths
+                }).ToList();
+        }
+        
+        private async Task UpdateItemKeywwords(WishlistContext db, ICollection<string> itemIds, IList<string> keywords) {
+            var itemKeywords = itemIds.SelectMany(id => keywords.Select(kw => new {
+                ItemId = id,
+                Keyword = kw
+            })).ToList();
+            var existingKeywords = db.ItemKeywords.Where(ik => itemIds.Contains(ik.ItemId))
+                .Select(ik => new { ItemId = ik.ItemId, Keyword = ik.Keyword })
+                .ToList();
+            var newKeywords = itemKeywords.Except(existingKeywords)
+                .ToList();
+
+            foreach (var ik in newKeywords) {
+                db.ItemKeywords.Add(new ItemKeyword {
+                    ItemId = ik.ItemId,
+                    Keyword = ik.Keyword
+                });
+            }
+
+            await db.SaveChangesAsync();
+        }
+
+        private async Task UpdateItemCategories(WishlistContext db, ICollection<string> itemIds, RetailCategory category) {
+            var itemCategories = itemIds.Select(id => new {
+                ItemId = id,
+                Category = category
+            }).ToList();
+            var existingCategories = db.ItemCategories.Where(ic => itemIds.Contains(ic.ItemId))
+                .Select(ic => new { ItemId = ic.ItemId, Category = ic.Category })
+                .ToList();
+            var newCategories = itemCategories.Except(existingCategories);
+
+            foreach (var ic in newCategories) {
+                db.ItemCategories.Add(new ItemCategory {
+                    ItemId = ic.ItemId,
+                    Category = ic.Category
+                });
+            }
+
+            await db.SaveChangesAsync();
         }
 
         [HttpPost]

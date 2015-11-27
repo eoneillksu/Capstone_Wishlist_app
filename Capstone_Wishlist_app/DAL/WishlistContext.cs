@@ -25,6 +25,9 @@ namespace Capstone_Wishlist_app.DAL
         public DbSet<DonatedItem> DonatedItems { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<FoundItem> FoundItems { get; set; }
+        public DbSet<ItemKeyword> ItemKeywords { get; set; }
+        public DbSet<ItemSearchCategory> ItemCategories { get; set; }
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

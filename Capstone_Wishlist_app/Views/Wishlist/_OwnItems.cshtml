@@ -5,36 +5,43 @@
 }
 <table class="table">
     <tr>
-        <th>Status</th>
-        <th>Image</th>
-        <th>
+        <th class="col-xs-2 text-center">Status</th>
+        <th class="col-xs-1 text-center">Image</th>
+        <th class="col-xs-5">
             @Html.DisplayNameFor(model => model.Title)
         </th>
-        <th>
+        <th class="col-xs-1 text-center">
             @Html.DisplayNameFor(model => model.ListPrice)
         </th>
-        <th>Recommended Ages</th>
-        <th></th>
+        <th class="col-xs-2 text-center">Recommended Ages</th>
+        <th class="col-xs-2"></th>
     </tr>
 
     @foreach (var item in Model) {
         <tr>
-            <td>
-                @switch (item.Status) {
-                    case WishlistItemStatus.Unapproved:
-                        <text>
-                            <i class="fa fa-star-o"></i>
-                            Unapproved
-                        </text>
-                        break;
-                    case WishlistItemStatus.Avaliable:
-                    <text>
-                        <i class="fa fa-check-circle"></i>
-                        Available
-                    </text>
-                        break;
-                }
-            </td>
+            @switch (item.Status) {
+                case WishlistItemStatus.Unapproved:
+                    <td class="text-warning text-center">
+                        <i class="fa fa-hourglass-start"></i>
+                        Unapproved
+                    </td>
+                    break;
+                case WishlistItemStatus.Available:
+                <td class="text-info text-center">
+                    <i class="fa fa-check-circle-o"></i>
+                    Available
+                </td>
+                    break;
+                case WishlistItemStatus.Ordered:
+                <td class="text-success text-center">
+                    <i class="fa fa-gift"></i>
+                    Ordered
+                </td>
+                    break;
+                default:
+                <td></td>
+                    break;
+            }
             <td><img src=@item.ImageUrl /></td>
             <td>
                 <a href=@item.ListingUrl target="_blank">
@@ -42,13 +49,15 @@
                 </a>
                 <i class="fa fa-external-link"></i>
             </td>
-            <td>@string.Format("{0:C}", item.ListPrice)</td>
-            <td>@AgeRange.FormatAgeRange(item.MinAgeMonths, item.MaxAgeMonths)</td>
+            <td class="text-right">@string.Format("{0:C}", item.ListPrice)</td>
+            <td class="text-center">@AgeRange.FormatAgeRange(item.MinAgeMonths, item.MaxAgeMonths)</td>
             <td>
-                <button type="button" class="btn btn-danger" onclick="removeItem(this, @item.Id)">
-                    <span class="glyphicon glyphicon-remove"></span>
-                    Remove this item
-                </button>
+                @if (item.Status != WishlistItemStatus.Ordered) {
+                    <button type="button" class="btn btn-danger" onclick="removeItem(this, @item.Id)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Remove this item
+                    </button>
+                }             
             </td>
         </tr>
     }

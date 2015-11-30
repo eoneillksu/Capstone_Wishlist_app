@@ -56,14 +56,15 @@
 </div>
 
 <script type="text/javascript">
-    var wishlistId = @Model.WishlistId
+    var addUrl = "@Url.Action("AddItem", new { id = Model.WishlistId })";
+    var searchUrl = "@Url.Action("SearchItems", new { id = Model.WishlistId })";
 
     function getSearchResults() {
         var $searchForm = $("#searchForm");
         var category = $("select[name=category]", $searchForm).val();
         var keywords = $("input[name=keywords]", $searchForm).val();
 
-        $.get("/Wishlist/" + wishlistId + "/SearchItems", {
+        $.get(searchUrl, {
             category: category,
             keywords: keywords
         }, function (results) {
@@ -72,7 +73,7 @@
     }
 
     function addItemToWishlist(element, itemId) {
-        $.post("/Wishlist/" + wishlistId + "/AddItem", {
+        $.post(addUrl, {
             itemId: itemId
         }, function (data) {
             if (data.IsOnWishlist) {

@@ -1,0 +1,41 @@
+﻿@model Capstone_Wishlist_app.Models.DonationViewModel
+
+<h4>
+    <button type="button" value="@Model.DonationId" class="btn btn-default btn-sm" onclick="toggleDonation(this)">
+        <i class="fa fa-plus"></i>
+    </button>
+    Donation @Model.DonationId
+    <small>
+        <i class="fa fa-gift"></i>
+        @Model.Items.Count items donated on @Model.Date.ToShortDateString()
+    </small>
+</h4>
+<div id="sw-donation-@Model.DonationId" style="margin-left: 20px; display: none">
+    <dl class="dl-horizontal">
+        <dt>Order ID</dt>
+        <dd>@Model.OrderId</dd>
+        <dt>Total</dt>
+        <dd>@string.Format("{0:C}", Model.Total)</dd>
+    </dl>
+    <label class="control-label">Items</label>
+    <table class="table">
+        <tr>
+            <th class="col-xs-2">Retailer ID</th>
+            <th class="col-xs-6">Item</th>
+            <th class="col-xs-3">Wishlist</th>
+            <th class="col-xs-1 text-right">Final Price</th>
+        </tr>
+        @foreach (var di in Model.Items) {
+            <tr>
+                <td>@di.ItemId</td>
+                <td>@di.Title</td>
+                <td>@di.ChildFirsName's Wishlist</td>
+                <td class="text-right">@string.Format("{0:C}", di.PurhcasePrice)</td>
+            </tr>
+        }
+        <tr class="active">
+            <td colspan="3" class="text-right"><b>Subotal for @Model.Items.Count items</b></td>
+            <td class="text-right"><b>@string.Format("{0:C}", Model.Subtotal)</b></td>
+        </tr>
+    </table>
+</div>

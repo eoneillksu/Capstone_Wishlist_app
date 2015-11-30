@@ -1,113 +1,67 @@
-﻿@using Capstone_Wishlist_app.Services
-@using Capstone_Wishlist_app.Models
-@model List<Capstone_Wishlist_app.Models.DonorListViewModel>
+﻿@model IEnumerable<Capstone_Wishlist_app.Models.ManageWishlistViewModel>
 
 @{
-    ViewBag.Title = "WishlistIndex";
+    ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Children's Wishlists</h2>
-@foreach (var wl in Model) {
-    <div class="row">
-        <div class="col-md-12">
-            <h3>
-                <button type="button" value=@wl.ChildId class="btn btn-default btn-sm" onclick="toggleWishlistView(this)" style="margin-bottom: 5px">
-                    <i class="fa fa-minus"></i>
-                </button>
-                @wl.FirstName
-                <small>
-                    @wl.Gender age @wl.Age
-                </small>
-            </h3>
-            <div class=@("sw-wl-view-" + wl.ChildId)>
-                <label class="control-label">About @wl.FirstName</label>
-                <p>@wl.Biography</p>
-                <label class="control-label">@wl.FirstName's Wishlist</label>
-                <table class="table">
-                    <tr>
-                        <th>Item</th>
-                        <th></th>
-                        <th>List Price</th>
-                        <th></th>
-                    </tr>
-                    @foreach (var item in wl.Items) {
-                        <tr>
-                            <td>
-                                <img src=@item.ImageUrl />
-                            </td>
-                            <td>
-                                <a target="_blank" href=@item.ListingUrl>@item.Title</a>
-                                <i class="fa fa-external-link"></i>
-                            </td>
-                            <td>
-                                @item.ListPrice
-                            </td>
-                            <td class="text-right">
-                                @if (ViewData.ContainsKey("DonorId")) {
-                                    <button type="button"
-                                            value="@item.Id"
-                                            class="btn btn-default" onclick="addItemToCart(this)">
-                                        <i class="fa fa-cart-plus"></i>
-                                        Add to cart
-                                    </button>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
+<div class="row">
+    <div class="col-md-12">
+        <h2>Wishlist Index</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href=@Url.Action("Index", "Home")>
+                    <i class="fa fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li>
+                <i class="fa fa-file-text"></i>
+                Wishlist Index
+            </li>
+        </ol>
+        <table class="table table-striped">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.FamilyId)</th>
+                <th>Family</th>
+                <th>@Html.DisplayNameFor(model => model.WishlistId)</th>
+                <th>@Html.DisplayNameFor(model => model.ChildFirstName)</th>
+                <th>@Html.DisplayNameFor(model => model.ItemCount)</th>
+                <th class="text-center text-warning">
+                    <i class="fa fa-circle-o"></i>
+                    @Html.DisplayNameFor(model => model.UnapprovedCount)
+                </th>
+                <th class="text-center text-info">
+                    <i class="fa fa-check-circle-o"></i>
+                    @Html.DisplayNameFor(model => model.AvailableCount)
+                </th>
+                <th class="text-center text-success">
+                    <i class="fa fa-gift"></i>
+                    @Html.DisplayNameFor(model => model.DonatedCount)
+                </th>
+            </tr>
+            @foreach (var wl in Model) {
+                <tr class=@(wl.UnapprovedCount > 0 ? "warning": "")>
+                    <td>@Html.DisplayFor(wm => wl.FamilyId)</td>
+                    <td>
+                        <a href=@Url.Action("Administer", "Family", new{ id = wl.FamilyId })>
+                            Family of @wl.ParentFirstName @wl.ParentLastName
+                        </a>
+                    </td>
+                    <td>@Html.DisplayFor(wm => wl.WishlistId)</td>
+                    <td>
+                        <a href=@Url.Action("Approve", new { id = wl.WishlistId})>
+                            @Html.DisplayFor(wm => wl.ChildFirstName)
+                        </a>
+                    </td>
+                    <td class="text-center">@Html.DisplayFor(wm => wl.ItemCount)</td>
+                    <td class="text-center">@Html.DisplayFor(wm => wl.UnapprovedCount)</td>
+                    <td class="text-center">@Html.DisplayFor(wm => wl.AvailableCount)</td>
+                    <td class="text-center">@Html.DisplayFor(wm => wl.DonatedCount)</td>
+                </tr>
+            }
+        </table>
     </div>
+</div>
 
-}
 
-@section scripts {
-    <script type="text/javascript">
-        @if (ViewData.ContainsKey("DonorId")) {
-            <text>
-        var addItemUrl = '@Url.Action("AddItemToCart", "Donor", new { id = ViewBag.DonorId })';
-        var countCartUrl = '@Url.Action("CountItemsInCart", "Donor", new { id = ViewBag.DonorId })';
-
-        function addItemToCart(element, id, title, listPrice) {
-            var $element = $(element);
-            var wishlistItemId = $element.val();
-
-            $.post(addItemUrl, { wishlistItemId: wishlistItemId }, function (result) {
-                if (result.IsInCart) {
-                    $element.replaceWith('<p class="text-success"><i class="fa fa-check"/>Added to cart!</p>');
-                } else if (result.WasInCart) {
-                    $element.replaceWith('<p class="text-success"><i class="fa fa-check"/>Already in cart!</p>');
-                }
-
-                $.get(countCartUrl, null, function (result) {
-                    $("#menuCartCount").replaceWith(result);
-                }, "html");
-            }, "json");
-        }
-        </text>
-        }
-
-        function toggleWishlistView(element) {
-            var $toggle = $(element);
-            var childId = $toggle.val();
-
-            if (window.console) {
-                console.log(childId);
-            }
-
-            var viewClass = ".sw-wl-view-" + childId;
-            $(viewClass).toggle();
-
-            var $icon = $("i", $toggle);
-
-            if ($icon.hasClass("fa-plus")) {
-                $icon.removeClass("fa-plus");
-                $icon.addClass("fa-minus");
-            } else if ($icon.hasClass("fa-minus")) {
-                $icon.removeClass("fa-minus");
-                $icon.addClass("fa-plus");
-            }
-        };
-    </script>
-}

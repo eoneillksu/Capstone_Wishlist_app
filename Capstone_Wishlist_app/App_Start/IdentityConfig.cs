@@ -3,12 +3,14 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
-using Capstone_Wishlist_app.Models;
 using SendGrid;
 using System.Net;
 using System.Configuration;
 using System.Diagnostics;
+using System.Web.Mvc;
+using System.Security.Claims;
 using Capstone_Wishlist_app.DAL;
+using Capstone_Wishlist_app.Models;
 
 namespace Capstone_Wishlist_app
 {
@@ -106,6 +108,48 @@ namespace Capstone_Wishlist_app
         {
             // Plug in your sms service here to send a text message.
             return Task.FromResult(0);
+        }
+    }
+
+    public class FamilyAuthorizeAttribute : AuthorizeAttribute {
+        public string Entity { get; set; }
+
+        public override void OnAuthorization(AuthorizationContext context) {
+            var id = context.RequestContext.RouteData.Values["id"];
+            var claimsUser = context.HttpContext.User as ClaimsPrincipal;
+
+            if (!claimsUser.HasClaim(Entity, id.ToString()) && !claimsUser.IsInRole(WishlistUser.AdminRole)) {
+                HandleUnauthorizedRequest(context);
+            }
+            base.OnAuthorization(context);
+        }
+
+        protected override void HandleUnauthorizedRequest(AuthorizationContext context) {
+            base.HandleUnauthorizedRequest(context);
+
+            if (context.HttpContext.User.Identity.IsAuthenticated) {
+                context.Result = new RedirectResult("~/Home/Unauthorized");
+            }
+        }
+    }
+
+    public class DonorAuthorizeAttribute : AuthorizeAttribute {
+        public override void OnAuthorization(AuthorizationContext context) {
+            var id = context.RequestContext.RouteData.Values["id"];
+            var claimsUser = context.HttpContext.User as ClaimsPrincipal;
+
+            if (!claimsUser.HasClaim("Donor", id.ToString())) {
+                HandleUnauthorizedRequest(context);
+            }
+            base.OnAuthorization(context);
+        }
+
+        protected override void HandleUnauthorizedRequest(AuthorizationContext context) {
+            base.HandleUnauthorizedRequest(context);
+
+            if (context.HttpContext.User.Identity.IsAuthenticated) {
+                context.Result = new RedirectResult("~/Home/Unauthorized");
+            }
         }
     }
 }

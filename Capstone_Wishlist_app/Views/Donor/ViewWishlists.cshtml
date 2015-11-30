@@ -1,0 +1,115 @@
+﻿@using Capstone_Wishlist_app.Services
+@using Capstone_Wishlist_app.Models
+@model List<Capstone_Wishlist_app.Models.DonorListViewModel>
+
+@{
+    ViewBag.Title = "Wishlists";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Children's Wishlists</h2>
+@foreach (var wl in Model) {
+    <div class="row">
+        <div class="col-md-12">
+            <h3>
+                <button type="button" value=@wl.ChildId class="btn btn-default btn-sm" onclick="toggleWishlistView(this)" style="margin-bottom: 5px">
+                    <i class="fa fa-minus"></i>
+                </button>
+                @wl.FirstName
+                @if (wl.Gender == Gender.Unspecified) {
+                    <small>Age @wl.Age</small>
+                } else {
+                    <small>@wl.Gender, age @wl.Age</small>
+                }
+            </h3>
+            <div class=@("sw-wl-view-" + wl.ChildId)>
+                <label class="control-label">About @wl.FirstName</label>
+                <p>@wl.Biography</p>
+                <label class="control-label">@wl.FirstName's Wishlist</label>
+                <table class="table">
+                    <tr>
+                        <th class="col-xs-1">Item</th>
+                        <th class="col-xs-8"></th>
+                        <th class="col-xs-1 text-center">List Price</th>
+                        <th class="col-xs-2"></th>
+                    </tr>
+
+                    @foreach (var wi in wl.Items) {
+                        <tr>
+                            <td>
+                                <img src=@wi.ImageUrl />
+                            </td>
+                            <td>
+                                <a target="_blank" href=@wi.ListingUrl>@wi.Title</a>
+                                <i class="fa fa-external-link"></i>
+                            </td>
+                            <td class="text-right">@Html.DisplayFor(w => wi.ListPrice)</td>
+                            <td class="text-right">
+                                @if (wi.IsInCart) {
+                                    <p class="text-success">
+                                        <i class="fa fa-check"></i>
+                                        Already in cart!
+                                    </p>
+                                } else {
+                                    <button type="button"
+                                            value="@wi.Id"
+                                            class="btn btn-default" onclick="addItemToCart(this)">
+                                        <i class="fa fa-cart-plus"></i>
+                                        Add to cart
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section scripts {
+    <script type="text/javascript">
+        var addItemUrl = '@Url.Action("AddItemToCart", new { id = ViewBag.DonorId })';
+        var countCartUrl = '@Url.Action("CountItemsInCart", new { id = ViewBag.DonorId })';
+
+        function addItemToCart(element, id, title, listPrice) {
+            var $element = $(element);
+            var wishlistItemId = $element.val();
+
+            $.post(addItemUrl, { wishlistItemId: wishlistItemId }, function (result) {
+                if (result.IsInCart) {
+                    $element.replaceWith('<p class="text-success"><i class="fa fa-check"/>Added to cart!</p>');
+                } else if (result.WasInCart) {
+                    $element.replaceWith('<p class="text-success"><i class="fa fa-check"/>Already in cart!</p>');
+                }
+
+                $.get(countCartUrl, null, function (result) {
+                    $("#menuCartCount").replaceWith(result);
+                }, "html");
+            }, "json");
+        }
+
+        function toggleWishlistView(element) {
+            var $toggle = $(element);
+            var childId = $toggle.val();
+
+            if (window.console) {
+                console.log(childId);
+            }
+
+            var viewClass = ".sw-wl-view-" + childId;
+            $(viewClass).toggle();
+
+            var $icon = $("i", $toggle);
+
+            if ($icon.hasClass("fa-plus")) {
+                $icon.removeClass("fa-plus");
+                $icon.addClass("fa-minus");
+            } else if ($icon.hasClass("fa-minus")) {
+                $icon.removeClass("fa-minus");
+                $icon.addClass("fa-plus");
+            }
+        };
+    </script>
+}

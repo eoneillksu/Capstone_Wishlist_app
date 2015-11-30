@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Capstone_Wishlist_app.Models.UnapprovedWishlistViewModel>
+
+@{
+    ViewBag.Title = "Unapproved";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Wishlists Requiring Approval</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href=@Url.Action("Index", "Home")>
+                    <i class="fa fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li class="active">
+                <i class="fa fa-circle-o"></i>
+                Unapproved Wishlists
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table">
+            <tr>
+                <th>@Html.DisplayNameFor(wl => wl.WishlistId)</th>
+                <th>Wishlist</th>
+                <th class="text-warning">
+                    <i class="fa fa-circle-o"></i>
+                    @Html.DisplayNameFor(wl => wl.UnapprovedCount)
+                </th>
+            </tr>
+            @foreach (var wl in Model) {
+                <tr>
+                    <td>@Html.DisplayFor(w => wl.WishlistId)</td>
+                    <td>
+                        <a href=@Url.Action("Approve", new{ id = wl.WishlistId })>
+                            @wl.ChildFirstName's Wishlist
+                        </a>
+                    </td>
+                    <td class="text-warning">
+                        @wl.UnapprovedCount
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+

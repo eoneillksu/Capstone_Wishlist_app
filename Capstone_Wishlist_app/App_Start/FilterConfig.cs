@@ -24,13 +24,7 @@ namespace Capstone_Wishlist_app
                 return;
             }
 
-            var user = context.HttpContext.User;
-
-            if (!user.IsInRole("Donor")) {
-                return;
-            }
-
-            var identity = user.Identity as ClaimsIdentity;
+            var identity = context.HttpContext.User.Identity as ClaimsIdentity;
             var donorClaim = identity.FindFirst("Donor");
 
             if (donorClaim == null) {

@@ -223,30 +223,31 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="App_Data\santasWishlist.mdf" />
+    <Content Include="App_Data\santasWishlist_log.ldf">
+      <DependentUpon>santasWishlist.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\images\christmas2.jpg" />
+    <Content Include="Content\images\Merry-Christmas.jpg" />
     <Content Include="Content\images\santa_gift.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="App_Data\items.json" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\santawishlist %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\santawishlist.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -372,7 +373,6 @@
     <Content Include="Views\Family\RegisterChild.cshtml" />
     <Content Include="Views\Child\EditProfile.cshtml" />
     <Content Include="Views\Child\ViewProfile.cshtml" />
-    <Content Include="Views\Wishlist\Index.cshtml" />
     <Content Include="Views\Family\ViewWishlists.cshtml" />
     <Content Include="Views\Wishlist\_OwnItems.cshtml" />
     <Content Include="Views\Wishlist\ViewOwn.cshtml" />
@@ -387,6 +387,13 @@
     <Content Include="Views\Donor\PurchaseCart.cshtml" />
     <Content Include="Views\Donor\ThankYou.cshtml" />
     <Content Include="Views\Donor\ConfirmOrder.cshtml" />
+    <Content Include="Views\Donor\Register.cshtml" />
+    <Content Include="Views\Home\_AdministratorHome.cshtml" />
+    <Content Include="Views\Wishlist\Unapproved.cshtml" />
+    <Content Include="Views\Donor\ViewWishlists.cshtml" />
+    <Content Include="Views\Wishlist\Index.cshtml" />
+    <Content Include="Views\Donor\History.cshtml" />
+    <Content Include="Views\Donor\DisplayTemplates\_Donation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

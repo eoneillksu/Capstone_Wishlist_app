@@ -37,34 +37,24 @@ namespace Capstone_Wishlist_app.Controllers {
             _retailer = new AmazonRetailer(AmazonAssociateTag, AmazonAccessKey, "AWSECommerceServicePort");
         }
 
-        [InjectDonorIdentity]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult> Index() {
-            var wishlists = await _db.WishLists.Include(c => c.Child)
-                .Include(i => i.Items)
-                .Include(w => w.Child.Biographies)
+            var wishlists = await _db.WishLists.Include(wl => wl.Child.Family)
+                .Include(wl => wl.Items)
                 .ToListAsync();
-                                 
-          var wishlistViews = new List<DonorListViewModel>();
 
-            foreach (var wl in wishlists)
-            {
-                var availableItems = wl.Items.Where(wi => wi.Status == WishlistItemStatus.Avaliable)
-                    .ToList();
-                var viewableItems = await GetViewableItems(availableItems);
-                var biographyText = wl.Child.Biographies.OrderBy(b => b.CreationDate)
-                    .Select(b => b.Text)
-                    .FirstOrDefault();
+            var wishlistViews = wishlists.Select(wl => new ManageWishlistViewModel {
+                WishlistId = wl.Id,
+                FamilyId = wl.Child.FamilyId,
+                ChildFirstName = wl.Child.FirstName,
+                ParentFirstName = wl.Child.Family.ParentFirstName,
+                ParentLastName = wl.Child.Family.ParentLastName,
+                ItemCount = wl.Items.Count,
+                UnapprovedCount = wl.Items.CountUnapproved(),
+                AvailableCount = wl.Items.CountAvailable(),
+                DonatedCount = wl.Items.CountDonated()
+            });
 
-                wishlistViews.Add(new DonorListViewModel(){
-                    ChildId = wl.ChildId,
-                    WishlistId = wl.Id,
-                    FirstName = wl.Child.FirstName,
-                    Age = wl.Child.Age,
-                    Gender = wl.Child.Gender,
-                    Biography = wl.Child.Biographies.OrderBy(b => b.CreationDate).Select( b => b.Text).FirstOrDefault(),                   
-                    Items = viewableItems                    
-                });
-            }
             return View(wishlistViews);
         }
 
@@ -245,6 +235,23 @@ namespace Capstone_Wishlist_app.Controllers {
 
         [HttpGet]
         [Authorize(Roles="Admin")]
+        public async Task<ActionResult> Unapproved() {
+            var wishlists = await _db.WishLists.Where(
+                wl => wl.Items.Any(wi => wi.Status == WishlistItemStatus.Unapproved))
+                .Include(wl => wl.Child)
+                .Include(wl => wl.Items)
+                .ToListAsync();
+            var wishlistViews = wishlists.Select(wl => new UnapprovedWishlistViewModel {
+                WishlistId = wl.Id,
+                ChildFirstName = wl.Child.FirstName,
+                UnapprovedCount = wl.Items.Count(wi => wi.Status == WishlistItemStatus.Unapproved)
+            });
+
+            return View(wishlistViews);
+        }
+
+        [HttpGet]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult> Approve(int id) {
             var wishlist = await _db.WishLists.Where(w => w.Id == id)
                 .Include(w => w.Items)
@@ -256,7 +263,8 @@ namespace Capstone_Wishlist_app.Controllers {
                 ItemId = wi.ItemId,
                 Status = wi.Status,
                 IsSelected = false
-            }).ToList();
+            }).OrderBy(ia => ia.Status)
+            .ToList();
 
             await AddRetailerItemProperties(items);
 
@@ -280,7 +288,25 @@ namespace Capstone_Wishlist_app.Controllers {
 
             foreach (var ia in itemApprovals) {
                 if (ia.IsApproved && ia.Item.Status == WishlistItemStatus.Unapproved) {
-                    ia.Item.Status = WishlistItemStatus.Avaliable;
+                    ia.Item.Status = WishlistItemStatus.Available;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Approve", new { id = id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles="Admin")]
+        public async Task<ActionResult> DisapproveItems(int id, ApproveWishlistViewModel disapproval) {
+            var items = await _db.WishlistItems.Where(wi => wi.WishlistId == id)
+                .ToListAsync();
+            var itemApprovals = items.Join(disapproval.Items, wi => wi.Id, ai => ai.Id,
+                (wi, ai) => new { Item = wi, IsApproved = ai.IsSelected });
+
+            foreach (var ia in itemApprovals) {
+                if (ia.IsApproved && ia.Item.Status == WishlistItemStatus.Available) {
+                    ia.Item.Status = WishlistItemStatus.Unapproved;
                 }
             }
 

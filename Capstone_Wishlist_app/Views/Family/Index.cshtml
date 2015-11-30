@@ -1,76 +1,51 @@
-﻿@model IEnumerable<Capstone_Wishlist_app.Models.Family>
+﻿@model IEnumerable<Capstone_Wishlist_app.Models.FamilyIndexViewModel>
 
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<div class="row">
+    <div class="col-md-12">
+        <h2>Family List</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href=@Url.Action("Index", "Home")>
+                    <i class="fa fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li class="active">
+                <i class="fa fa-users"></i>
+                Family List
+            </li>
+        </ol>
+        <table class="table">
+            <tr>
+                <th>@Html.DisplayNameFor(f => f.Id)</th>
+                <th>Family</th>
+                <th>@Html.DisplayNameFor(f => f.Phone)</th>
+                <th>@Html.DisplayNameFor(f => f.Email)</th>
+                <th></th>
+            </tr>
+            @foreach (var fm in Model) {
+                <tr>
+                    <td>@Html.DisplayFor(f => fm.Id)</td>
+                    <td>
+                        <a href=@Url.Action("Administer", new { id = fm.Id })>
+                            Family of @fm.ParentFirstName @fm.ParentLastName
+                        </a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(f => fm.Phone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(f => fm.Email)
+                    </td>
+                    <td>@fm.ChildCount children with @fm.GiftCount gifts</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.ParentFirstName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ParentLastName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Shipping_address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Shipping_city)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Shipping_state)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Shipping_zipCode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Phone)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.ParentFirstName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ParentLastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Shipping_address)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Shipping_city)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Shipping_state)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Shipping_zipCode)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Phone)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Family_ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Family_ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Family_ID })
-        </td>
-    </tr>
-}
-
-</table>

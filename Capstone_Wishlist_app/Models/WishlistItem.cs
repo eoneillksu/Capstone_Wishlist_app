@@ -24,9 +24,15 @@ namespace Capstone_Wishlist_app.Models {
     //The possible order statuses for all items
     public enum WishlistItemStatus {
         Unapproved,
-        Avaliable,
+        Available,
         Ordered
     };
+
+    public static class WishlistItemExtensions {
+        public static bool IsNotOrdered(this WishlistItem wi) {
+            return wi.Status != WishlistItemStatus.Ordered;
+        }
+    }
 
     public class FoundItem {
         [Key]

@@ -19,12 +19,10 @@
 </h3>
 <label class="control-label">Donation Progress</label>
 <div class="progress">
-    @if (Model.Items.CountDonated() > 0) {
-        <div class="progress-bar progress-bar-success" role="progressbar" style="min-width:4em; width:@Model.Items.GetPercentDonated()%">
-            <i class="fa fa-gift"></i>
-            @Model.Items.CountDonated()
-        </div>
-    }
+    <div class="progress-bar progress-bar-success" role="progressbar" style="min-width:4em; width:@Model.Items.GetPercentDonated()%">
+        <i class="fa fa-gift"></i>
+        @Model.Items.CountDonated()
+    </div>
     @if (Model.Items.CountAvailable() > 0) {
         <div class="progress-bar progress-bar-striped" role="progressbar" style="min-width:4em; width:@Model.Items.GetPercentAvailable()%">
             <i class="fa fa-check-circle"></i>

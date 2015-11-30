@@ -23,26 +23,4 @@ namespace Capstone_Wishlist_app.Models
 
         public const string AdminRole = "Admin";
     }
-
-    public class FamilyAuthorizeAttribute : AuthorizeAttribute {
-        public string Entity { get; set; }
-
-        public override void OnAuthorization(AuthorizationContext context) {
-            var id = context.RequestContext.RouteData.Values["id"];
-            var claimsUser = (ClaimsPrincipal)context.HttpContext.User;
-
-            if (!claimsUser.HasClaim(Entity, id.ToString()) && !claimsUser.IsInRole(WishlistUser.AdminRole)) {
-                HandleUnauthorizedRequest(context);
-            }
-            base.OnAuthorization(context);
-        }
-
-        protected override void HandleUnauthorizedRequest(AuthorizationContext context) {
-            base.HandleUnauthorizedRequest(context);
-
-            if (context.HttpContext.User.Identity.IsAuthenticated) {
-                context.Result = new RedirectResult("~/Home/Unauthorized");
-            }
-        }
-    }
 }

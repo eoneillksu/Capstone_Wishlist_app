@@ -5,10 +5,47 @@ using System.Linq;
 using System.Web;
 
 namespace Capstone_Wishlist_app.Models {
-    public class AddToCartViewModel {
-        public int WishlistItemId { get; set; }
-        public decimal ListPrice { get; set; }
-        public string Title { get; set; }
+    public class RegisterDonorViewModel {
+        [Display(Name = "Donor's Name")]
+        public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+
+        public int? DonorId { get; set; }
+    }
+
+    public class DonorListViewModel {
+        public int ChildId { get; set; }
+        public int WishlistId { get; set; }
+
+        [Display(Name = "Name")]
+        public string FirstName { get; set; }
+
+        public int Age { get; set; }
+        public Gender Gender { get; set; }
+
+        [Display(Name = "About Me")]
+        public string Biography { get; set; }
+
+        public IList<DonorWishlistItemViewModel> Items { get; set; }
+    }
+
+    public class DonorWishlistItemViewModel : WishlistItemViewModel {
+        public bool IsInCart { get; set; }
     }
 
     public class CartCountViewModel {
@@ -92,5 +129,23 @@ namespace Capstone_Wishlist_app.Models {
         public int DonationId { get; set; }
         public decimal Total { get; set; }
         public ICollection<string> ChildNames { get; set; }
+    }
+
+    public class DonationViewModel {
+        public int DonorId { get; set; }
+        public int DonationId { get; set; }
+        public string OrderId { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Subtotal { get; set; }
+        public decimal Total { get; set; }
+
+        public ICollection<DonatedItemViewModel> Items { get; set; }
+    }
+
+    public class DonatedItemViewModel {
+        public string ItemId { get; set; }
+        public string Title { get; set; }
+        public decimal PurhcasePrice { get; set; }
+        public string ChildFirsName { get; set; }
     }
 }

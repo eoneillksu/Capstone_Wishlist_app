@@ -6,66 +6,92 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Administer @Model.ParentLastName Family</h2>
-@if (TempData["familyCredentials"] != null) {
-    var credentials = (FamilyCredentials) TempData["familyCredentials"];
-    <p class="text-success">
-        <span class="glyphicon glyphicon-check"></span>
-        The password for the @Model.ParentLastName family is successfully reset.
-        The family can now log in using the credentials below.
-        Please pass them on to the family immediately as the password is not stored in the database.
-        The password can be reset to a new value if the password below is lost.
-    </p>
-    <dl class="dl-horizontal text-success">
-        <dt>UserName</dt>
-        <dd>@credentials.Username</dd>
-        <dt>Password</dt>
-        <dd>@credentials.Password</dd>
-    </dl>
-}
-<div>
-    <h4>Contact Information</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.ParentFirstName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ParentFirstName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ParentLastName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ParentLastName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Phone)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-    </dl>
-    <h4>Shipping Address</h4>
-    <hr />
-    @Html.DisplayFor(m => m.ShippingAddress, "_Address")
+<div class="row">
+    <div class="col-md-12">
+        <h2>@Model.Id - Family of @Model.ParentFirstName @Model.ParentLastName</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href=@Url.Action("Index", "Home")>
+                    <i class="fa fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li>
+                <a href=@Url.Action("Index", "Family")>
+                    <i class="fa fa-users"></i>
+                    Family List
+                </a>
+            </li>
+            <li class="active">@Model.Id - @Model.ParentLastName Family</li>
+        </ol>
+    </div>
 </div>
-@using (Html.BeginForm("ResetPassword", "Family", new { id = Model.Id }, FormMethod.Post, null)) {
-    <button type="submit" class="btn btn-default">Reset Password</button>
-}
-<p>
-    @Html.ActionLink("Back to List", "Index")
-</p>
+<div class="row">
+    <div class="col-md-6">
+        @if (TempData.ContainsKey("familyCredentials")) {
+            var credentials = (FamilyCredentials) TempData["familyCredentials"];
+            <div class="well well-sm">
+                <p class="text-success">
+                    <span class="glyphicon glyphicon-check"></span>
+                    The password for the @Model.ParentLastName family is successfully reset.
+                <p>
+                <p>
+                    The family can now log in using the credentials below.
+                    Please pass them on to the family immediately as <b>the password is not stored</b> in the database.
+                    The password can be reset to a new value if the password below is lost.
+                </p>
+                <dl class="dl-horizontal">
+                    <dt>UserName</dt>
+                    <dd>@credentials.Username</dd>
+                    <dt>Password</dt>
+                    <dd>@credentials.Password</dd>
+                </dl>
+            </div>
+        }
+        <h4>Contact Information</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ParentFirstName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ParentFirstName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ParentLastName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ParentLastName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Phone)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Phone)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Email)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+        </dl>
+        <h4>Shipping Address</h4>
+        <hr />
+        @Html.DisplayFor(m => m.ShippingAddress, "_Address")
+        @using (Html.BeginForm("ResetPassword", "Family", new { id = Model.Id }, FormMethod.Post, null)) {
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-refresh"></i>
+                Reset Password
+            </button>
+        }
+    </div>
+</div>
+

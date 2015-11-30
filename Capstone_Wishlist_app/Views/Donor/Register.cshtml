@@ -1,0 +1,89 @@
+﻿@model Capstone_Wishlist_app.Models.RegisterDonorViewModel
+@{
+    ViewBag.Title = "Donor Register";
+
+    if (Model.DonorId.HasValue) {
+        ViewBag.DonorId = Model.DonorId.Value;
+    }
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Become a Donor</h2>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("Register", "Donor", FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
+            @Html.AntiForgeryToken()
+            if (Model.DonorId.HasValue) {
+                <text>@Html.HiddenFor(r => r.DonorId)</text>
+            }
+            <h4>Create a new account</h4>
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.Name, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-8">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-edit"></i>
+                        Register
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+    @if (!Model.DonorId.HasValue) {
+        <div class="col-md-6">
+            @using (Html.BeginForm("SignInAnonymously", "Donor", FormMethod.Post, new { @class = "form-horizontal" })) {
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-user-secret"></i>
+                            Donate anonymously
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <p class="text-warning">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            Anonymous donors can not view donation history.
+                        </p>
+                        <p>
+                            If you choose not to register an account with Santas Wishlist you will not be able to view your past donations.
+                            If you sign out before making a donation your cart will be lost.
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -17,10 +17,10 @@
                     Home
                 </a>
             </li>
-            <li class="active">
-                <a href=@Url.Action("ViewWishlists", "Family", new { id = Model.FamilyId })>
-                    <i class="fa fa-file-text"></i>
-                    Family Wishlists
+            <li>
+                <a href=@Url.Action("Index")>
+                    <i class="fa fa-file-text-o"></i>
+                    Wishlists
                 </a>
             </li>
             <li class="active">@Model.ChildFirstName's Wishlist</li>
@@ -33,44 +33,58 @@
         </dl>
     </div>
 </div>
-@using (Html.BeginForm("Approve", "Wishlist", new { id = Model.WishlistId }, FormMethod.Post, new { @class = "form-horizontal" })) {
+@using (Html.BeginForm("Approve", "Wishlist", new { id = Model.WishlistId }, FormMethod.Post, new { @class = "form-horizontal", id = "approvalForm"})) {
     <table class="table">
         <tr>
-            <th>Is Selected</th>
-            <th>Status</th>
-            <th>Image</th>
-            <th>Title</th>
-            <th>List Price</th>
-            <th>Recommended Ages</th>
+            <th class="col-xs-1 text-center">Select</th>
+            <th class="col-xs-2 text-center">Status</th>
+            <th class="col-xs-1 text-center">Image</th>
+            <th class="col-xs-5 text-center">Title</th>
+            <th class="col-xs-1 text-center">List Price</th>
+            <th class="col-xs-2 text-center">Recommended Ages</th>
         </tr>
         @foreach (var wi in @Model.Items.Select((wi, i) => new { Item = wi, Index = i })) {
             @Html.HiddenFor(wl => wl.Items[wi.Index].Id)
             <tr>
-                <td>@Html.CheckBoxFor(wl => wl.Items[wi.Index].IsSelected, new { @class = "form-control" })</td>
-                <td>
-                    @switch (wi.Item.Status) {
-                        case WishlistItemStatus.Unapproved:
-                            <text>
-                                <i class="fa fa-star-o"></i>
-                                Unapproved
-                            </text>
-                            break;
-                        case WishlistItemStatus.Avaliable:
-                        <text>
-                            <i class="fa fa-check-circle"></i>
-                            Available
-                        </text>
-                            break;
+                <td class="text-center">
+                    @if (wi.Item.Status != WishlistItemStatus.Ordered) {
+                        <text>@Html.CheckBoxFor(wl => wl.Items[wi.Index].IsSelected, new { @class = "form-control" })</text>
                     }
                 </td>
-                <td><img src=@wi.Item.ImageUrl /></td>
+                @switch (wi.Item.Status) {
+                    case WishlistItemStatus.Unapproved:
+                        <td class="text-warning text-center">
+                            <i class="fa fa-hourglass-start"></i>
+                            Unapproved
+                        </td>
+                        break;
+                    case WishlistItemStatus.Available:
+                    <td class="text-info text-center">
+                        <i class="fa fa-check-circle-o"></i>
+                        Available
+                    </td>
+                        break;
+                    case WishlistItemStatus.Ordered:
+                    <td class="text-success text-center">
+                        <i class="fa fa-gift"></i>
+                        Ordered
+                    </td>
+                        break;
+                    default:
+                    <td></td>
+                        break;
+                }
                 <td>
-                    <a href=@wi.Item.ListingUrl>@wi.Item.Title</a>
+                    <img src=@wi.Item.ImageUrl />
                 </td>
                 <td>
+                    <a href=@wi.Item.ListingUrl target="_blank">@wi.Item.Title</a>
+                    <i class="fa fa-external-link"></i>
+                </td>
+                <td class="text-right">
                     @Html.DisplayFor(modelItem => wi.Item.ListPrice)
                 </td>
-                <td>@AgeRange.FormatAgeRange(wi.Item.MinAgeMonths, wi.Item.MaxAgeMonths)</td>
+                <td class="text-center">@AgeRange.FormatAgeRange(wi.Item.MinAgeMonths, wi.Item.MaxAgeMonths)</td>
             </tr>
         }
     </table>
@@ -78,6 +92,21 @@
         <i class="fa fa-check"></i>
         Approve selected items
     </button>
+    <button type="button" class="btn btn-danger" onclick="submitDisapproval()">
+        <i class="fa fa-ban"></i>
+        Disapprove selected items
+    </button>
 }
 
+@section Scripts {
+    <script type="text/javascript">
+        var disapproveUrl = "@Url.Action("DisapproveItems", new { id = Model.WishlistId })";
+
+        function submitDisapproval() {
+            var $approvalForm = $("#approvalForm");
+            $approvalForm.attr("action", disapproveUrl);
+            $approvalForm.submit();
+        }
+    </script>
+}
 

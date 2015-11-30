@@ -1,0 +1,46 @@
+﻿@model IList<Capstone_Wishlist_app.Models.DonationViewModel>
+
+@{
+    ViewBag.Title = "History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Donation History</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href=@Url.Action("Index", "Home")>
+                    <i class="fa fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li class="active">
+                <i class="fa fa-history"></i>
+                Donation History
+            </li>
+        </ol>
+    </div>
+</div>
+@foreach (var dn in Model) {
+    <div class="row">
+        <div class="col-md-12">
+            @Html.DisplayFor(m => dn, "_Donation")
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function toggleDonation(element) {
+            var $toggle = $(element);
+            var donationId = $toggle.val();
+            var divId = "#sw-donation-" + donationId;
+            var div = $(divId).toggle();
+
+            var $icon = $("i", $toggle);
+            $icon.toggleClass("fa-plus");
+            $icon.toggleClass("fa-minus");
+        }
+    </script>
+}

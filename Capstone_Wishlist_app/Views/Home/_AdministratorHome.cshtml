@@ -1,0 +1,66 @@
+﻿<div class="row">
+    <div class="col-md-4">
+        <h3>Families</h3>
+        <div class="list-group">
+            <a href=@Url.Action("Register", "Family") class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <i class="fa fa-user-plus"></i>
+                    Register a Family
+                </h4>
+                <p class="list-group-item-text">
+                    Enter contact information and create a user account for a family.
+                </p>
+            </a>
+        </div>
+        <div class="list-group">
+            <a href=@Url.Action("Index", "Family") class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <i class="fa fa-users"></i>
+                    Family List
+                </h4>
+                <p class="list-group-item-text">
+                    See a list of all registered families.
+                </p>
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h3>Users</h3>
+        <div class="list-group">
+            <a href=@Url.Action("RoleAddToUser", "Account") class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <i class="fa fa-user-plus"></i>
+                    Add User to Role
+                </h4>
+                <p class="list-group-item-text">
+                    See a list of all wishlists owned by the family.
+                </p>
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h3>Wishlists</h3>
+        <div class="list-group">
+            <a href=@Url.Action("Index", "Wishlist") class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <i class="fa fa-file-text-o"></i>
+                    All Wishlists
+                </h4>
+                <p class="list-group-item-text">
+                    See a list of all wishlists.
+                </p>
+            </a>
+        </div>
+        <div class="list-group">
+            <a href=@Url.Action("Unapproved", "Wishlist") class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <i class="fa fa-check-circle-o"></i>
+                    Approve Wishlists
+                </h4>
+                <p class="list-group-item-text">
+                    See a list of wishlists with unapproved items.
+                </p>
+            </a>
+        </div>
+    </div>
+</div>

@@ -8,7 +8,7 @@
     @Scripts.Render("~/bundles/modernizr")
 
 </head>
-<body>
+<body class="christmas">
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -19,16 +19,25 @@
                 </button>
                 @Html.ActionLink("Santa's Wishlist", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
+            @if (User.IsInRole("Admin"))
+            {
+                @*<ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle" style="color:gold">Administrator Tools<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Role Management", "RoleAddToUser", "Account")</li>
+                            <li>@Html.ActionLink("Role Create", "RoleCreate", "Account")</li>
+                            <li>@Html.ActionLink("Register Staff", "RegisterStaff", "Account")</li>                            
+                        </ul>
+                    </li>
+                </ul>*@
+            }
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-
-                    @if (this.User.IsInRole("Admin")) {
-                        <li>@Html.ActionLink("Register Staff", "RegisterStaff", "Account")</li>
-                        //<li><a href="@Url.Action("Register", "Account")">Register Staff</a></li>
-                    }
+                   
                     @if (ViewData.ContainsKey("FamilyId")) {
                         <li>
                             <a href="#" data-toggle="dropdown" role="button" class="dropdown-toggle">
@@ -45,13 +54,19 @@
                     }
                     @if (ViewData.ContainsKey("DonorId")) {
                         Html.RenderAction("CountItemsInCart", "Donor", new { id = ViewBag.DonorId });
+                        <li>
+                            <a href=@Url.Action("History", "Donor", new { id = ViewBag.DonorId })>
+                                <i class="fa fa-history"></i>
+                                My Donations
+                             </a>
+                        </li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="container body-content plates">
         @RenderBody()
         <hr />
         <footer>

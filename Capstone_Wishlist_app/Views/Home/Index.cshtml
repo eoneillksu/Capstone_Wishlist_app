@@ -2,25 +2,8 @@
     ViewBag.Title = "Home Page";
 }
 
-@if (!User.Identity.IsAuthenticated || User.IsInRole("Donor")) {
-    <div class="jumbotron">
-        <div class="container">
-            <h1>Santa's Wishlist</h1>
-            <div class="col-md-8">
-                <p class="lead">Make A Difference Today.</p>
-                @*----------------------Url.Action("Register", "Account")---------------------------------*@
-                @if (Request.IsAuthenticated) {
-                    <p><a href="@Url.Action("Index", "Wishlist")" class="btn btn-primary btn-lg">Give a Gift &raquo;</a></p>
-                } else {
-                    <p><a href="@Url.Action("Register", "Account")" class="btn btn-primary btn-lg">Register as a Donor &raquo;</a></p>
-                }
-            </div>
-            <div class="col-md-4"><img src="~/Content/images/santa_gift.jpg" height="266" width="400" class="img-responsive" /></div>
-        </div>
-    </div>
-}
-
-@if (this.User.IsInRole("Moderator")) {
+@if (User.IsInRole("Moderator")) {
+    <h3 style="color:darkturquoise"><strong>Moderator Tools ------------------------</strong></h3>
     <div class="row">
         <div class="col-md-3, col-lg-4">
             <h2>Add Wishlists</h2>
@@ -32,61 +15,22 @@
         </div>
 
         <div class="col-md-3, col-lg-4">
-            <h2>Adding a Family Profile</h2>
-            <p>To add a family's and child's profile</p>
-            <p><a class="btn btn-default" href="@Url.Action("CreateFamily", "CreateFamily")">Add Family Profile &raquo;</a></p>
+            <h2>Register a Family</h2>
+            <p>To register a family and add a child's profile</p>
+            <p><a class="btn btn-default" href="@Url.Action("Register", "Family")">Register a Family &raquo;</a></p>
         </div>
-    </div>
-} else if (this.User.IsInRole("Admin")) {
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Add Role to User</h2>
-            <p>
-                Add a role to a user
-            </p>
-            <p><a class="btn btn-default" href="@Url.Action("RoleAddToUser", "Account")">Add Roles &raquo;</a></p>
-        </div>
-
-        <div class="col-md-4">
-            <h2>Create Role</h2>
-            <p>
-                To create a new role for users
-            </p>
-            <p><a class="btn btn-default" href="@Url.Action("RoleCreate", "Account")">Create Roles &raquo;</a></p>
-        </div>
-
-        <div class="col-md-4">
-            <h2>Role Index</h2>
-            <p>
-                To view and manage all roles.
-            </p>
-            <p><a class="btn btn-default" href="@Url.Action("RoleIndex", "Account")">Role Index &raquo;</a></p>
-        </div>
-
-    <div class="col-md-3, col-lg-4">
-        <h2>Register a Family</h2>
-        <p>To register a family's and add a child's profile</p>
-        <p><a class="btn btn-default" href="@Url.Action("Register", "Family")">Family Registration &raquo;</a></p>
-    </div>
-
-        <div class="col-md-4">
+        <div class="col-md-3, col-lg-4">
             <h2>Approve Wishlists Items</h2>
             <p>
                 To create new profiles and wishlists
             </p>
-            @*-------------------------need to add link to wishlist form---------------------------*@
-            <p><a class="btn btn-default" href="@Url.Action("Index", "Items")">Approve Wishlist Items&raquo;</a></p>
-        </div>
-
-        <div class="col-md-4">
-            <h2>Add Wishlists</h2>
-            <p>
-                To create new profiles and wishlists
-            </p>
-            @*-------------------------need to add link to wishlist form---------------------------*@
-            <p><a class="btn btn-default" href="">Add Wishlist &raquo;</a></p>
+            <p><a class="btn btn-default" href="@Url.Action("Index", "Wishlist")">Approve Wishlist Items&raquo;</a></p>
         </div>
     </div>
+    <hr />
+}
+@if (User.IsInRole("Admin")) {
+    Html.RenderPartial("_AdministratorHome");
 } else if (ViewData.ContainsKey("FamilyId")) {
     <br />
     <div class="jumbotron">
@@ -133,16 +77,23 @@
         </div>
     </div>
 } else {
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Santa's Wishlist</h1>
+            <div class="col-md-8">
+                <p class="lead">Make A Difference Today.</p>
+                @if (ViewData.ContainsKey("DonorId")) {
+                    <p><a href="@Url.Action("ViewWishlists", "Donor", new { id = ViewBag.DonorId })" class="btn btn-primary btn-lg">Give a Gift &raquo;</a></p>
+                } else {
+                    <p><a href="@Url.Action("Register", "Donor")" class="btn btn-primary btn-lg">Become a Donor &raquo;</a></p>
+                }
+            </div>
+            <div class="col-md-4"><img src="~/Content/images/santa_gift.jpg" height="266" width="400" class="img-responsive" /></div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-3, col-lg-4">
             <h2>The Vision</h2>
-            <p>
-                The end of year holiday season is historically a difficult time for impoverished families that want to provide happy memories for their children.
-                This system is designed to help those children by facilitating gift-giving by charitable donors to children in need.
-            </p>
-        </div>
-        <div class="col-md-6, col-lg-8">
-            <h2>Santa's Wishlist</h2>
             <p>
                 The end of year holiday season is historically a difficult time for impoverished families that want to provide happy memories for their children.
                 This system is designed to help those children by facilitating gift-giving by charitable donors to children in need.

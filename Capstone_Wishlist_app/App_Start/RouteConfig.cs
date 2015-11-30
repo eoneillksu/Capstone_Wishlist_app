@@ -14,11 +14,6 @@ namespace Capstone_Wishlist_app
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
-                name: "Wishlist",
-                url: "Wishlist/{id}/{action}",
-                defaults: new { controller = "Wishlist", action = "Index" });
-
-            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }

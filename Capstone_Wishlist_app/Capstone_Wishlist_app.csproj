@@ -189,6 +189,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Controllers\WishlistController.cs" />
+    <Compile Include="DAL\ItemSearchRepository.cs" />
     <Compile Include="DAL\WishlistContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -394,6 +395,8 @@
     <Content Include="Views\Wishlist\Index.cshtml" />
     <Content Include="Views\Donor\History.cshtml" />
     <Content Include="Views\Donor\DisplayTemplates\_Donation.cshtml" />
+    <Content Include="Views\Donor\SearchGifts.cshtml" />
+    <Content Include="Views\Donor\_GiftResults.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

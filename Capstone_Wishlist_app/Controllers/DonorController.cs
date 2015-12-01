@@ -531,5 +531,28 @@ namespace Capstone_Wishlist_app.Controllers {
 
             return View(donationView);
         }
+
+        [HttpGet]
+        [DonorAuthorize]
+        [InjectDonorIdentity]
+        public ActionResult SearchGifts(int id) {
+            return View();
+        }
+
+        [HttpGet]
+        [DonorAuthorize]
+        [InjectDonorIdentity]
+        public async Task<ActionResult> GiftSearchResults(int id, GiftSearchViewModel search) {
+            var searchRepo = new ItemSearchRepository();
+            var matchingItemIds = await searchRepo.GetMatchingItemsAsync(search.Categories, search.Keywords);
+            var wishlistItems = await _db.WishlistItems.Where(wi => matchingItemIds.Contains(wi.ItemId))
+                .ToListAsync();
+            var cartItems = await _db.CartItems.Where(ci => ci.CartId == id)
+                .ToListAsync();
+            var retailItems = await LookupItems(wishlistItems);
+            var itemViews = JoinIntoViewableItems(wishlistItems, cartItems, retailItems);
+
+            return PartialView("_GiftResults", itemViews);
+        }
     }
 }

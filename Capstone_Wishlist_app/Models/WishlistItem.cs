@@ -43,7 +43,7 @@ namespace Capstone_Wishlist_app.Models {
         public int MaxAgeMonths { get; set; }
 
         public virtual ICollection<ItemSearchCategory> Categories { get; set; }
-        public virtual ICollection<string> Keywords { get; set; }
+        public virtual ICollection<ItemKeyword> Keywords { get; set; }
     }
 
     public class ItemKeyword {

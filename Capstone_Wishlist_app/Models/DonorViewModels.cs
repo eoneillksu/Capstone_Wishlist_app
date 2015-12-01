@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using Capstone_Wishlist_app.Services;
 
 namespace Capstone_Wishlist_app.Models {
     public class RegisterDonorViewModel {
@@ -147,5 +148,13 @@ namespace Capstone_Wishlist_app.Models {
         public string Title { get; set; }
         public decimal PurhcasePrice { get; set; }
         public string ChildFirsName { get; set; }
+    }
+
+    public class GiftSearchViewModel {
+        public decimal MaxPrice { get; set; }
+        public int MinAgeYears { get; set; }
+        public int MaxAgeYears { get; set; }
+        public ItemCategory[] Categories { get; set; }
+        public string Keywords { get; set; }
     }
 }

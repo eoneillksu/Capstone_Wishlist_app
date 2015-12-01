@@ -1,0 +1,94 @@
+﻿@using Capstone_Wishlist_app.Services
+
+@{
+    ViewBag.Title = "Search Gifts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Search Gifts</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href=@Url.Action("Index", "Home")>
+                    <i class="fa fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li class="active">
+                <i class="fa fa-search"></i>
+                Gift Search
+            </li>
+        </ol>
+    </div>
+</div>
+<div id="giftSearchForm" class="row">
+    <div class="col-md-6">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-md-4 control-label">Keywords</label>
+                <div class="col-md-8">
+                    <input type="text" name="keywords" class="form-control" placeholder="Enter words that describe the item" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8 col-md-offset-4">
+                    <button type="button" class="btn btn-primary" onclick="searchGifts()">
+                        <i class="fa fa-search"></i>
+                        Search for gifts
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-horizontal">
+            <label class="control-label">Include Categories</label>
+            @foreach (var ct in Enum.GetValues(typeof(ItemCategory))) {
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="@ct" class="sw-categoryCheck" />
+                        @ct
+                    </label>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="searchResults"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        var searchUrl = "@Url.Action("GiftSearchResults", new { id = ViewBag.DonorId })";
+
+        function searchGifts() {
+            $searchForm = $("#giftSearchForm");
+            $keywords = $("input[name=keywords]", $searchForm);
+            var categories = getChosenCategories();
+
+            $.get(searchUrl, $.param({
+                keywords: $keywords.val(),
+                categories: categories
+            }, true), function (results) {
+                $("#searchResults").replaceWith(results);
+            }, "html");
+        }
+
+        function getChosenCategories() {
+            var categories = [];
+
+            $(".sw-categoryCheck").each(function (i) {
+                if (this.checked) {
+                    categories.push(this.value);
+                }
+            });
+
+            return categories;
+        }
+    </script>
+    
+}
